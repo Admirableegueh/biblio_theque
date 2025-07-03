@@ -5,13 +5,22 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 
+interface RegisterData {
+  nom: string;
+  prenom: string;
+  email: string;
+  password: string;
+  role: string;
+}
+
 export default function Inscription() {
   const [formData, setFormData] = useState({
     nom: '',
     prenom: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    role: 'user', // Par défaut user, mais modifiable
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -40,8 +49,9 @@ export default function Inscription() {
       nom: formData.nom,
       prenom: formData.prenom,
       email: formData.email,
-      password: formData.password
-    });
+      password: formData.password,
+      role: formData.role, // Prend la valeur choisie
+    } as RegisterData);
 
     if (success) {
       router.push('/Connexion'); // Redirige vers la page de connexion après inscription
@@ -52,7 +62,7 @@ export default function Inscription() {
     setIsLoading(false);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
@@ -134,6 +144,20 @@ export default function Inscription() {
               className="w-full px-4 py-2 rounded text-black focus:outline-none focus:ring-2 focus:ring-yellow-400"
               required
             />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium mb-2">Rôle</label>
+            <select
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              className="w-full px-4 py-2 rounded text-black focus:outline-none focus:ring-2 focus:ring-yellow-400"
+              required
+            >
+              <option value="user">Utilisateur</option>
+              <option value="admin">Administrateur</option>
+            </select>
           </div>
           
           <button 

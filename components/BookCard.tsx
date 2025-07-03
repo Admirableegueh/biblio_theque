@@ -108,31 +108,43 @@ export default function BookCard({ id, titre, auteur, genre, disponible, quantit
   const dateRetour = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000).toLocaleDateString();
 
   return (
-    <div className="p-4 border rounded shadow bg-white flex flex-col h-full">
-      <img
-        src={(!imageUrl || imageUrl.includes('exemple.com')) ? "/file.svg" : imageUrl}
-        alt={titre}
-        className="w-full h-40 object-cover rounded mb-3"
-        onError={(e) => {
-          (e.target as HTMLImageElement).src = "/file.svg";
-        }}
-      />
-      <h2 className="text-xl font-semibold mb-1">{titre}</h2>
-      <p className="text-gray-600 mb-1">Auteur : {auteur}</p>
-      <p className="text-sm text-gray-500 mb-1">Catégorie : {genre}</p>
-      {annee_publication && <p className="text-sm text-gray-400 mb-1">Année : {annee_publication}</p>}
-      {description && <p className="text-xs text-gray-500 mb-2 line-clamp-2">{description}</p>}
-      <p className={disponible ? 'text-green-600 mb-1' : 'text-red-600 mb-1'}>
-        {disponible ? '✅ Disponible' : '❌ Indisponible'}
-      </p>
-      {typeof quantite === 'number' && <p className="text-xs text-gray-400 mb-1">Quantité : {quantite}</p>}
-      <button
-        className="mt-auto inline-block text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded transition"
-        disabled={!disponible || quantite === 0}
-        onClick={handleOpenModal}
-      >
-        Emprunter
-      </button>
+    <div className="relative group bg-gradient-to-br from-green-50 to-white border border-green-200 rounded-2xl shadow-lg flex flex-col h-full overflow-hidden transition-transform hover:-translate-y-1 hover:shadow-2xl">
+      <div className="relative">
+        <img
+          src={(!imageUrl || imageUrl.includes('exemple.com'))
+            ? "/file.svg"
+            : (imageUrl.startsWith('http') ? imageUrl : `http://localhost:4000${imageUrl}`)
+          }
+          alt={titre}
+          className="w-full h-48 object-cover rounded-t-2xl group-hover:scale-105 transition-transform duration-300"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = "/file.svg";
+          }}
+        />
+        <span className={`absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-bold shadow ${disponible ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-700'}`}>{disponible ? 'Disponible' : 'Indisponible'}</span>
+      </div>
+      <div className="flex-1 flex flex-col p-4">
+        <h2 className="text-2xl font-extrabold text-green-900 mb-1 truncate">{titre}</h2>
+        <p className="text-green-700 font-semibold mb-1">{auteur}</p>
+        <p className="text-xs text-green-600 mb-1 italic">{genre}</p>
+        {annee_publication && <p className="text-xs text-gray-400 mb-1">Année : {annee_publication}</p>}
+        {description && <p className="text-xs text-gray-500 mb-2 line-clamp-2">{description}</p>}
+        <div className="flex flex-row gap-2 mt-auto">
+          <button
+            className="flex-1 inline-block text-white bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg font-bold shadow transition"
+            disabled={!disponible || quantite === 0}
+            onClick={handleOpenModal}
+          >
+            Emprunter
+          </button>
+          <Link
+            href={`/BookDetails/${id}`}
+            className="flex-1 inline-block text-green-700 border border-green-600 hover:bg-green-50 px-4 py-2 rounded-lg font-bold shadow transition text-center"
+          >
+            Détails
+          </Link>
+        </div>
+      </div>
       {/* Modal d'emprunt */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
@@ -153,7 +165,7 @@ export default function BookCard({ id, titre, auteur, genre, disponible, quantit
             )}
             <div className="mt-6 flex justify-end gap-2">
               <button className="px-4 py-2 rounded bg-gray-300" onClick={() => setShowModal(false)}>Annuler</button>
-              <button className="px-4 py-2 rounded bg-blue-600 text-white" onClick={handleBorrow} disabled={loading || !!error}>
+              <button className="px-4 py-2 rounded bg-green-600 text-white" onClick={handleBorrow} disabled={loading || !!error}>
                 Confirmer l'emprunt
               </button>
             </div>

@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
 interface User {
   id: string;
@@ -15,7 +16,7 @@ interface AuthContextType {
   user: User | null;
   token: string | null;
   login: (email: string, password: string) => Promise<boolean>;
-  register: (userData: { nom: string; prenom: string; email: string; password: string }) => Promise<boolean>;
+  register: (userData: { nom: string; prenom: string; email: string; password: string; role: string }) => Promise<boolean>;
   logout: () => void;
   isLoading: boolean;
   isAuthenticated: boolean;
@@ -39,6 +40,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const savedToken = localStorage.getItem('token');
@@ -52,12 +54,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const fetchCurrentUser = async (authToken: string) => {
     try {
-      const response = await axios.get('/api/user/me', {
-        headers: { Authorization: `Bearer ${authToken}` }
+      const response = await axios.get('http://localhost:4000/api/user/me', {
+        headers: { token: authToken }
       });
-      setUser(response.data);
+      // Vérifie que la réponse est bien un utilisateur valide
+      if (response.data && !response.data.error && !response.data.Error) {
+        setUser(response.data);
+      } else {
+        // Si erreur, on force le logout
+        setUser(null);
+        setToken(null);
+        localStorage.removeItem('token');
+      }
     } catch (error) {
       console.error('Erreur lors de la récupération de l\'utilisateur:', error);
+      setUser(null);
       localStorage.removeItem('token');
       setToken(null);
     } finally {
@@ -71,17 +82,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const { token: newToken, user: userData } = response.data;
       
       setToken(newToken);
-      setUser(userData);
       localStorage.setItem('token', newToken);
+      // Synchroniser le contexte utilisateur après login
+      await fetchCurrentUser(newToken);
+      // Redirection automatique selon le rôle
+      if (userData.role && userData.role.toLowerCase() === 'admin') {
+        router.replace('/admin');
+      } else {
+        router.replace('/');
+      }
       
       return true;
     } catch (error) {
       console.error('Erreur de connexion:', error);
+      if (typeof error === 'object' && error !== null && 'response' in error) {
+        // @ts-ignore
+        console.log('Erreur backend:', error.response.data);
+      }
       return false;
     }
   };
 
-  const register = async (userData: { nom: string; prenom: string; email: string; password: string }): Promise<boolean> => {
+  const register = async (userData: { nom: string; prenom: string; email: string; password: string; role: string }): Promise<boolean> => {
     try {
       // Ajout d'un champ telephone par défaut (optionnel, à adapter selon le backend)
       const payload = { ...userData, telephone: 0 };

@@ -10,22 +10,26 @@ export default function NavBar() {
 
   return (
     <nav className="bg-[#0C1E3C] text-white px-6 py-4 flex justify-between items-center shadow-lg">
-      <Link href="/" className="text-xl font-bold hover:text-yellow-400 transition">
+      <button
+        onClick={() => router.push('/')}
+        className="text-xl font-bold hover:text-yellow-400 transition bg-transparent border-none cursor-pointer"
+        style={{ background: 'none', border: 'none', padding: 0 }}
+      >
         📚 Bibliothèque Universitaire
-      </Link>
+      </button>
       
       <div className="flex items-center space-x-4">
+        <Link href="/Livres" className="hover:text-yellow-400 transition">
+          Catalogue
+        </Link>
+        <Link href="/MesEmprunts" className="hover:text-yellow-400 transition font-semibold">
+          Mes Emprunts
+        </Link>
+        <Link href="/admin" className="hover:text-yellow-400 transition font-semibold">
+          Admin
+        </Link>
         {isAuthenticated ? (
           <>
-            <Link href="/Livres" className="hover:text-yellow-400 transition">
-              Catalogue
-            </Link>
-            <Link href="/MonEspace" className="hover:text-yellow-400 transition">
-              Mon Espace
-            </Link>
-            <span className="text-yellow-400">
-              Bonjour, {user?.prenom}
-            </span>
             <button 
               onClick={() => { logout(); window.location.href = '/Connexion'; }}
               className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition"
@@ -35,9 +39,6 @@ export default function NavBar() {
           </>
         ) : (
           <>
-            <Link href="/Livres" className="hover:text-yellow-400 transition">
-              Catalogue
-            </Link>
             <Link href="/Inscription" className="hover:text-yellow-400 transition">
               S'inscrire
             </Link>

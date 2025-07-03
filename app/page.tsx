@@ -5,6 +5,7 @@ import NavBar from '@/components/NavBar';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useAuth } from '@/context/AuthContext';
+import axios from 'axios';
 
 // Composant Témoignages avec défilement automatique et effet fondu amélioré
 function Testimonials() {
@@ -82,28 +83,36 @@ function Testimonials() {
 
 // Composant "Nouveautés" avec slider horizontal amélioré
 function NewArrivals() {
-  const [hoveredBook, setHoveredBook] = useState(null);
-  
-  const books = [
-    { id: 1, title: "La Nuit des Temps", author: "René Barjavel", category: "Science-Fiction", rating: 4.8 },
-    { id: 2, title: "L'Étranger", author: "Albert Camus", category: "Littérature", rating: 4.6 },
-    { id: 3, title: "Le Petit Prince", author: "Antoine de Saint-Exupéry", category: "Classique", rating: 4.9 },
-    { id: 4, title: "1984", author: "George Orwell", category: "Dystopie", rating: 4.7 },
-    { id: 5, title: "Fahrenheit 451", author: "Ray Bradbury", category: "Science-Fiction", rating: 4.5 },
-  ];
+  const [hoveredBook, setHoveredBook] = useState<number | null>(null);
+  const [books, setBooks] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const StarRating = ({ rating }) => {
-    return (
-      <div className="flex items-center gap-1 mb-2">
-        {[...Array(5)].map((_, i) => (
-          <span key={i} className={`text-sm ${i < Math.floor(rating) ? 'text-yellow-400' : 'text-gray-400'}`}>
-            ⭐
-          </span>
-        ))}
-        <span className="text-xs text-gray-300 ml-1">{rating}</span>
-      </div>
-    );
-  };
+  useEffect(() => {
+    const fetchBooks = async () => {
+      try {
+        setIsLoading(true);
+        const response = await axios.get('http://localhost:4000/api/livres');
+        let livres = Array.isArray(response.data) ? response.data : [];
+        // Trier par id décroissant (ou remplacer par date si dispo)
+        livres = livres.sort((a, b) => (b.id || 0) - (a.id || 0));
+        setBooks(livres.slice(0, 5));
+      } catch (e) {
+        setBooks([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchBooks();
+  }, []);
+
+  const StarRating = ({ rating }: { rating: number }) => (
+    <div className="flex items-center gap-1 mb-2">
+      {[...Array(5)].map((_, i) => (
+        <span key={i} className={`text-sm ${i < Math.floor(rating) ? 'text-yellow-400' : 'text-gray-400'}`}>⭐</span>
+      ))}
+      <span className="text-xs text-gray-300 ml-1">{rating ? rating.toFixed(1) : '-'}</span>
+    </div>
+  );
 
   return (
     <section
@@ -114,13 +123,17 @@ function NewArrivals() {
         Dernières Acquisitions
       </h2>
       <div className="flex overflow-x-auto gap-6 pb-4 scrollbar-thin scrollbar-thumb-yellow-400/60 scrollbar-track-transparent">
-        {books.map((book) => (
+        {isLoading ? (
+          <div className="text-white text-lg">Chargement...</div>
+        ) : books.length === 0 ? (
+          <div className="text-white text-lg">Aucun livre trouvé</div>
+        ) : books.map((book) => (
           <div
             key={book.id}
             className="min-w-[200px] group bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-md border border-white/20 rounded-2xl p-6 hover:from-white/20 hover:to-white/10 transition-all duration-300 cursor-pointer flex-shrink-0 hover:scale-105 hover:shadow-2xl relative overflow-hidden"
             tabIndex={0}
             role="button"
-            aria-label={`Livre: ${book.title} par ${book.author}`}
+            aria-label={`Livre: ${book.titre} par ${book.auteur}`}
             onMouseEnter={() => setHoveredBook(book.id)}
             onMouseLeave={() => setHoveredBook(null)}
           >
@@ -128,32 +141,37 @@ function NewArrivals() {
             <div className="absolute -top-2 -right-2 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs px-2 py-1 rounded-full font-bold animate-pulse">
               NOUVEAU
             </div>
-            
             <div className="w-full h-48 bg-gradient-to-br from-yellow-400/20 to-orange-400/20 rounded-lg mb-4 flex items-center justify-center group-hover:from-yellow-400/30 group-hover:to-orange-400/30 transition-colors relative overflow-hidden">
-              <span className="text-4xl group-hover:scale-110 transition-transform">📖</span>
+              {book.imageUrl ? (
+                <img
+                  src={book.imageUrl.startsWith('http') ? book.imageUrl : `http://localhost:4000${book.imageUrl}`}
+                  alt={book.titre}
+                  className="h-full max-h-44 w-auto object-contain rounded shadow mx-auto"
+                  onError={e => { (e.target as HTMLImageElement).src = '/file.svg'; }}
+                />
+              ) : (
+                <span className="text-4xl group-hover:scale-110 transition-transform">📖</span>
+              )}
               {/* Effet de brillance au hover */}
               {hoveredBook === book.id && (
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 translate-x-full animate-shimmer"></div>
               )}
             </div>
-            
-            <StarRating rating={book.rating} />
-            
+            <StarRating rating={book.note_moyenne || 0} />
             <div className="text-xs text-yellow-400 font-semibold mb-2 uppercase tracking-wide">
-              {book.category}
+              {book.genre}
             </div>
             <h3 className="text-lg font-bold text-white mb-2 line-clamp-2 group-hover:text-yellow-300 transition-colors">
-              {book.title}
+              {book.titre}
             </h3>
             <p className="text-sm text-gray-300 group-hover:text-gray-200 transition-colors">
-              {book.author}
+              {book.auteur}
             </p>
-            
             {/* Bouton "Voir plus" qui apparaît au hover */}
             <div className={`mt-3 transition-all duration-300 ${hoveredBook === book.id ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}>
-              <button className="w-full py-2 bg-yellow-400/20 hover:bg-yellow-400/30 rounded-lg text-yellow-400 text-sm font-semibold border border-yellow-400/30 transition-colors">
+              <Link href={`/BookDetails/${book.id}`} className="w-full block py-2 bg-yellow-400/20 hover:bg-yellow-400/30 rounded-lg text-yellow-400 text-sm font-semibold border border-yellow-400/30 text-center transition-colors">
                 Voir détails
-              </button>
+              </Link>
             </div>
           </div>
         ))}
@@ -237,30 +255,16 @@ function HeroSection({ isAuthenticated, isLoading }) {
             </span>
             <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-red-400 opacity-0 group-hover:opacity-100 transition-opacity"></div>
           </Link>
-
-          {isAuthenticated ? (
-            <Link
-              href="/MonEspace"
-              className="group px-10 py-5 bg-gradient-to-r from-green-500 to-emerald-500 text-white font-bold text-xl rounded-2xl hover:from-green-600 hover:to-emerald-600 transition-all duration-300 hover:scale-110 hover:shadow-2xl"
-              aria-label="Accéder à mon espace utilisateur"
-            >
-              <span className="flex items-center gap-3">
-                <span className="text-2xl group-hover:scale-110 transition-transform">👤</span>
-                Mon Espace
-              </span>
-            </Link>
-          ) : (
-            <Link
-              href="/Connexion"
-              className="group px-10 py-5 bg-transparent border-3 border-yellow-400 text-yellow-400 font-bold text-xl rounded-2xl hover:bg-yellow-400 hover:text-black transition-all duration-300 hover:scale-110 hover:shadow-2xl backdrop-blur-sm"
-              aria-label="Se connecter à mon compte"
-            >
-              <span className="flex items-center gap-3">
-                <span className="text-2xl group-hover:scale-110 transition-transform">🔐</span>
-                Se Connecter
-              </span>
-            </Link>
-          )}
+          <Link
+            href="/Connexion"
+            className="group px-10 py-5 bg-transparent border-3 border-yellow-400 text-yellow-400 font-bold text-xl rounded-2xl hover:bg-yellow-400 hover:text-black transition-all duration-300 hover:scale-110 hover:shadow-2xl backdrop-blur-sm"
+            aria-label="Se connecter à mon compte"
+          >
+            <span className="flex items-center gap-3">
+              <span className="text-2xl group-hover:scale-110 transition-transform">🔐</span>
+              Se Connecter
+            </span>
+          </Link>
         </div>
       )}
     </section>

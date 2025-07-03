@@ -71,39 +71,35 @@ export default function Livres() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-white to-green-100">
       <NavBar />
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">📚 Catalogue des Livres</h1>
-          <p className="text-gray-600">Découvrez notre collection de livres académiques</p>
+      <div className="container mx-auto px-4 py-12">
+        <div className="mb-10 border-b-2 border-green-300 pb-6 flex flex-col items-center">
+          <h1 className="text-5xl font-extrabold text-green-800 mb-2 tracking-tight drop-shadow-lg">📚 Catalogue</h1>
+          <p className="text-xl text-gray-600 font-medium">Explorez notre collection de livres académiques et laissez-vous inspirer !</p>
         </div>
         {/* Filtres */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Filtres de recherche</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white/80 rounded-2xl shadow-xl p-8 mb-12 border border-green-200 backdrop-blur-md">
+          <h2 className="text-2xl font-bold text-green-700 mb-6 flex items-center gap-2"><span className="text-3xl">🔎</span> Recherche & Filtres</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Recherche par titre */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Rechercher par titre
-              </label>
+              <label className="block text-sm font-semibold text-green-700 mb-2">Titre</label>
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Tapez le titre du livre..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Tapez le titre..."
+                className="w-full px-3 py-2 border border-green-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 bg-green-50"
               />
             </div>
             {/* Filtre par catégorie */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Catégorie
-              </label>
+              <label className="block text-sm font-semibold text-green-700 mb-2">Catégorie</label>
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-green-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 bg-green-50"
               >
                 <option value="">Toutes les catégories</option>
                 {categories.map(category => (
@@ -113,13 +109,11 @@ export default function Livres() {
             </div>
             {/* Filtre par auteur */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Auteur
-              </label>
+              <label className="block text-sm font-semibold text-green-700 mb-2">Auteur</label>
               <select
                 value={selectedAuthor}
                 onChange={(e) => setSelectedAuthor(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-green-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 bg-green-50"
               >
                 <option value="">Tous les auteurs</option>
                 {authors.map(author => (
@@ -130,23 +124,21 @@ export default function Livres() {
             {/* Filtre disponibilité */}
             <div className="flex items-center">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Disponibilité
-                </label>
+                <label className="block text-sm font-semibold text-green-700 mb-2">Disponibilité</label>
                 <label className="flex items-center">
                   <input
                     type="checkbox"
                     checked={showAvailableOnly}
                     onChange={(e) => setShowAvailableOnly(e.target.checked)}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-green-600 focus:ring-green-400 border-green-300 rounded"
                   />
-                  <span className="ml-2 text-sm text-gray-700">Disponibles uniquement</span>
+                  <span className="ml-2 text-sm text-green-700">Disponibles uniquement</span>
                 </label>
               </div>
             </div>
           </div>
           {/* Bouton de reset */}
-          <div className="mt-4">
+          <div className="mt-6 flex justify-end">
             <button
               onClick={() => {
                 setSearchTerm('');
@@ -154,45 +146,41 @@ export default function Livres() {
                 setSelectedAuthor('');
                 setShowAvailableOnly(false);
               }}
-              className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition"
+              className="px-5 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition font-semibold shadow"
             >
-              🔄 Réinitialiser les filtres
+              🔄 Réinitialiser
             </button>
           </div>
         </div>
         {/* Statistiques */}
-        <div className="mb-6">
-          <div className="flex flex-wrap gap-4 text-sm text-gray-600">
-            <span>📖 Total: {books.length} livres</span>
-            <span>✅ Disponibles: {books.filter(b => b.disponible).length}</span>
-            <span>📚 Catégories: {categories.length}</span>
-          </div>
+        <div className="mb-8 flex flex-wrap gap-8 justify-center text-lg text-green-800 font-semibold">
+          <span className="flex items-center gap-2"><span className="text-2xl">📖</span> {books.length} livres</span>
+          <span className="flex items-center gap-2"><span className="text-2xl">✅</span> {books.filter(b => b.disponible).length} disponibles</span>
+          <span className="flex items-center gap-2"><span className="text-2xl">📚</span> {categories.length} catégories</span>
         </div>
         {/* Liste des livres */}
         {errorMsg && (
-          <div className="bg-red-100 text-red-700 p-4 rounded mb-4 text-center">
+          <div className="bg-red-100 text-red-700 p-4 rounded mb-4 text-center font-semibold">
             {errorMsg}
           </div>
         )}
         {isLoading ? (
-          <div className="flex justify-center items-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            <span className="ml-3 text-gray-600">Chargement des livres...</span>
+          <div className="flex justify-center items-center py-16">
+            <div className="animate-spin rounded-full h-14 w-14 border-b-4 border-green-600"></div>
+            <span className="ml-4 text-green-700 text-lg font-semibold">Chargement des livres...</span>
           </div>
         ) : Array.isArray(filteredBooks) && filteredBooks.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
             {filteredBooks.map(book => (
-              <BookCard 
-              key={book.id} 
-              {...book} 
-              onBorrowSuccess={handleBorrowSuccess}
-              />
+              <div className="transition-transform hover:-translate-y-2 hover:shadow-2xl rounded-2xl bg-white/90 border border-green-100" key={book.id}>
+                <BookCard {...book} onBorrowSuccess={handleBorrowSuccess} />
+              </div>
             ))}
             </div>
         ) : (
-          <div className="text-center py-12">
-            <div className="text-6xl mb-4">📚</div>
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">Aucun livre trouvé</h3>
+          <div className="text-center py-16">
+            <div className="text-7xl mb-4">📚</div>
+            <h3 className="text-2xl font-bold text-green-800 mb-2">Aucun livre trouvé</h3>
             <p className="text-gray-600">Essayez de modifier vos critères de recherche</p>
           </div>
         )}

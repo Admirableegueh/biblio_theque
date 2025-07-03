@@ -30,11 +30,14 @@ export default function HomePage() {
             email : Email,
             password: Password
         });
-  
-       localStorage.setItem('token', res.data.token);
+        localStorage.setItem('token', res.data.token);
+        // Vérifie si la réponse contient le rôle admin
+        if (res.data.user && res.data.user.role === 'admin') {
+          window.location.href = '/admin';
+        } else {
+          router.push('/');
+        }
         alert( ' Connexion avec succes votre token = ' + res.data.token)
-       router.push('/');
-        
       } catch (err) {
         alert("ÉAAAAchec de la connexion au serveur " + err);
         console.log("ÉAAAAchec de la connexion au serveur " + err);
