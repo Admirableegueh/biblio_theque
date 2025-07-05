@@ -59,3 +59,9 @@ NavBar, Footer, BookCard, etc. sont des petits blocs réutilisables dans plusieu
 Context Auth :
 
 On utilise un "contexte" React pour gérer l’authentification de l’utilisateur dans tout le site (savoir s’il est connecté, son rôle, etc.).
+
+## Identifiants Admin
+mail: "tamadmin@gmail.com"
+mot de passe:"tam123"
+
+Ou si vous voulez vous pouvez choisr en tant qu'utilisateur ou administrateur lors de l'inscription.
