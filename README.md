@@ -34,3 +34,28 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+Structure du projet
+
+Mon  projet est divisé en deux parties principales : le frontend et le backend.
+
+Frontend – biblio_theque (Next.js)
+C’est la partie visible de l’application, celle que les utilisateurs utilisent dans leur navigateur.
+
+Pages :
+
+/Livres : page qui affiche tous les livres disponibles, avec possibilité de filtrer lorsqu'on clique sur catalogue ou explorer le catalogue.
+
+/MesEmprunts : page réservée à l’utilisateur connecté, où il voit les livres qu’il a empruntés, la date de retour et de pouvoir donner des avis.
+
+/admin/livres : page réservée aux administrateurs pour ajouter, modifier ou supprimer des livres, gérer les étudiants, voir l'activité de la page , afficher les emprunts et avoir une vue globale du site.
+
+/admin/avis : page réservée aux administrateurs pour voir ou gérer les avis donnés sur les livres.
+
+Composants :
+
+NavBar, Footer, BookCard, etc. sont des petits blocs réutilisables dans plusieurs pages (barre de navigation, fiche livre...).
+
+Context Auth :
+
+On utilise un "contexte" React pour gérer l’authentification de l’utilisateur dans tout le site (savoir s’il est connecté, son rôle, etc.).
